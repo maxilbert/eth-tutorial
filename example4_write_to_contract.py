@@ -1,4 +1,4 @@
-from example2_transfer_eth import *
+from utils import *
 
 
 def build_tx_to_contract(sender, contract, func, w3, args):
@@ -18,9 +18,9 @@ def build_tx_to_contract(sender, contract, func, w3, args):
 
 if __name__ == "__main__":
 
-    w3 = connet()
-    keys =["0x49A84BB8270017202E8B49079CC9C54120CD0705E8C38D847BECD31FCB9B1105",
-            "0xE9832B5B33A5F62EC6F41D1D7CD499F9650E73F9111324FEBE239311EFE5E237"]
+    w3 = connect()
+    keys = ["0xBD0FC2D2C54F836B6C9C90B66AFBB66F382CD7DA51FD62F8B236887436E94956",
+            "0x79EBEE964F761090AC92E8B88DE48983A418C3071A61006D038BA17330298D88"]
 
     # Complied binary code of SimpleDataStorage contract
     addr = '0x7Bf0ae85311A2A668594951A7E89fE4A9A6dc688'

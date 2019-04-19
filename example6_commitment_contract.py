@@ -1,10 +1,10 @@
-from example5_deploy_contract_with_args import *
+from utils import *
 
 if __name__ == "__main__":
 
-    w3 = connet()
-    keys =["0x49A84BB8270017202E8B49079CC9C54120CD0705E8C38D847BECD31FCB9B1105",
-            "0xE9832B5B33A5F62EC6F41D1D7CD499F9650E73F9111324FEBE239311EFE5E237"]
+    w3 = connect()
+    keys = ["0xBD0FC2D2C54F836B6C9C90B66AFBB66F382CD7DA51FD62F8B236887436E94956",
+            "0x79EBEE964F761090AC92E8B88DE48983A418C3071A61006D038BA17330298D88"]
     sender = Account.privateKeyToAccount(keys[0])
 
 
@@ -19,43 +19,43 @@ if __name__ == "__main__":
     Commitment = w3.eth.contract(abi=abi, bytecode=bin)
 
 
-    # Deploy a contract with committing
-    deploy_tx = build_tx_deploy_contract(sender, Commitment, w3, [comm])
+    # Deploy a contract with committing a message
+    deploy_tx = build_tx_to_deploy_contract(sender, Commitment, w3, [comm])
     deploy_tx_signed = sign_tx(deploy_tx, sender, w3)
+    contract_addr = precompute_contract_addr(sender, w3)
     deploy_receipt = send_signed_tx(deploy_tx_signed, w3)
     print("Included by block: ", deploy_receipt['blockNumber'])
-    print('Contract address: ', deploy_receipt['contractAddress'])
+    print('Contract address (deployed): ', deploy_receipt['contractAddress'])
+    assert (contract_addr == deploy_receipt['contractAddress'])
 
+    # Reveal the commited message in the contract
     Commitment = w3.eth.contract(abi=abi, bytecode=bin, address=deploy_receipt['contractAddress'])
     reveal_tx = build_tx_to_contract(sender, Commitment, 'reveal', w3, [msg, rnd])
     reveal_tx_signed = sign_tx(reveal_tx, sender, w3)
     receipt = send_signed_tx(reveal_tx_signed, w3)
     print("Included by block: ", receipt['blockNumber'])
-    print('Contract address: ', receipt['contractAddress'])
 
-
-'''
-pragma solidity ^0.5.1;
+    '''
+    pragma solidity ^0.5.1;
+        
+    contract Commitment {
+        
+        bytes32 public comm = 0x0;
+        event Reveal(string msg);
     
-contract Commitment {
-    
-    bytes32 public comm = 0x0;
-    event Reveal(string msg);
-
-    
-    constructor (bytes32 c) public {
-        comm = c;
+        constructor (bytes32 c) public {
+            comm = c;
+        }
+        
+        function reveal (string memory message, uint256 rnd) public  {
+            bytes32 comm_1= keccak256(
+                abi.encodePacked(
+                    message, keccak256(abi.encodePacked(rnd))
+                )
+            );
+            require(comm == comm_1);
+            emit Reveal(message);
+        }
+        
     }
-    
-    function reveal (string memory message, uint256 rnd) public  {
-        bytes32 comm_1= keccak256(
-            abi.encodePacked(
-                message, keccak256(abi.encodePacked(rnd))
-            )
-        );
-        require(comm == comm_1);
-        emit Reveal(message);
-    }
-    
-}
-'''
+    '''
