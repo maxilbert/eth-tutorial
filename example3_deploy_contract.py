@@ -32,9 +32,9 @@ if __name__ == "__main__":
     w3 = connet()
 
     sender = Account.privateKeyToAccount(keys[0])
-    print("Sender: ", sender.address)
+    print("Sender: ", sender)
 
-    tx = build_tx(sender.address, '', 0, w3, 470000, bin)
+    tx = build_tx(sender, '', 0, w3, 470000, bin)
 
     tx_signed = sign_tx(tx, sender, w3)
 

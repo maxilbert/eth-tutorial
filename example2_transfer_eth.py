@@ -4,7 +4,7 @@ from example1_connect_rpc import connet
 
 
 def build_tx(sender, receiver, value, w3, gas=21000, data=''):
-    nonce = w3.eth.getTransactionCount(sender)
+    nonce = w3.eth.getTransactionCount(sender.address)
     print("Sender nonce: ", nonce)
     tx = {
         'to': receiver,
@@ -45,16 +45,17 @@ def wait_for_receipt(tx_hash, w3):
 
 if __name__ == "__main__":
     w3 = connet()
-    keys = ["0x49A84BB8270017202E8B49079CC9C54120CD0705E8C38D847BECD31FCB9B1105",
-            "0xE9832B5B33A5F62EC6F41D1D7CD499F9650E73F9111324FEBE239311EFE5E237"]
+    keys = ["0xBD0FC2D2C54F836B6C9C90B66AFBB66F382CD7DA51FD62F8B236887436E94956",
+            "0x79EBEE964F761090AC92E8B88DE48983A418C3071A61006D038BA17330298D88"]
 
     sender = Account.privateKeyToAccount(keys[0])
     print("Sender: ", sender.address)
 
     receiver = Account.privateKeyToAccount(keys[1])
-    print("Receiver: ", receiver.address)
+    receiver_addr = receiver.address
+    print("Receiver: ", receiver_addr)
 
-    tx = build_tx(sender.address, receiver.address, 1000000000000000000, w3)
+    tx = build_tx(sender, receiver_addr, 1000000000000000000, w3)
 
     tx_signed = sign_tx(tx, sender, w3)
 
