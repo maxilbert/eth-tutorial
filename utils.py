@@ -3,6 +3,7 @@ import time
 from eth_account import Account
 import rlp
 
+
 def connect():
     WS = HTTPProvider('https://ropsten.infura.io/v3/80600ab9eedf4cd59f5efcb85ed93ede')
     w3 = Web3([WS])
